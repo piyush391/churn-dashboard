@@ -42,10 +42,9 @@ st.caption(
 # ================================
 # IMAGE (SAFE)
 # ================================
-image_path = os.path.join("assets", "bank.jpg")
 
-if os.path.exists(image_path):
-    st.image(image_path, use_container_width=True)
+if os.path.exists("assets/bank.jpg"):
+    st.image("assets/bank.jpg", use_container_width=True)
 else:
     st.warning("⚠ Image not found. Check assets/bank.jpg path")
 
