@@ -43,10 +43,15 @@ st.caption(
 # IMAGE (SAFE)
 # ================================
 
-if os.path.exists("assets/bank.jpg"):
-    st.image("assets/bank.jpg", use_container_width=True)
+import os
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+image_path = os.path.join(BASE_DIR, "assets", "bank.jpg")
+
+if os.path.exists(image_path):
+    st.image(image_path, use_container_width=True)
 else:
-    st.warning("⚠ Image not found. Check assets/bank.jpg path")
+    st.error(f"Image NOT found at: {image_path}")
 
 # ================================
 # MODEL SELECTION (FIXED - ONLY ONCE)
