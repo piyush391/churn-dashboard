@@ -4,7 +4,7 @@ This project is a machine learning-based web application built using Streamlit t
 
 🚀 Live Demo
 
-https://your-app-name.streamlit.app
+https://churn-dashboard-vwm3kvveuot3wkormztr8t.streamlit.app/
 
 📊 Project Overview
 
