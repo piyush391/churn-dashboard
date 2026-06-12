@@ -10,22 +10,6 @@ import plotly.graph_objects as go
 import shap
 from sklearn.metrics import roc_curve, auc
 
-
-from sklearn.base import BaseEstimator, TransformerMixin
-
-class FeatureEngineer(BaseEstimator, TransformerMixin):
-    def fit(self, X, y=None):
-        return self
-
-    def transform(self, X):
-        X = X.copy()
-
-        X["BalanceSalaryRatio"] = X["Balance"] / (X["EstimatedSalary"] + 1)
-        X["ProductDensity"] = X["NumOfProducts"] / (X["Age"] + 1)
-        X["AgeTenureInteraction"] = X["Age"] * X["Tenure"]
-
-        return X
-
 # ================================
 # CONFIG (FIRST STREAMLIT CALL)
 # ================================
@@ -220,7 +204,8 @@ with tab2:
     st.subheader("SHAP Explainability")
 
     try:
-        X_transformed = model[:-1].transform(input_df)
+        preprocessor = model.named_steps["preprocessor"]
+        X_transformed = preprocessor.transform(input_df)
         ml_model = model.named_steps["model"]
 
         explainer = shap.TreeExplainer(ml_model)
