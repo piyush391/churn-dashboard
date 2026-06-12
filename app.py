@@ -143,6 +143,24 @@ input_df = pd.DataFrame([{
     "EstimatedSalary": float(st.sidebar.number_input("EstimatedSalary", 50000))
 }])
 
+# =====================================
+# ENGINEERED FEATURES
+# =====================================
+input_df["BalanceSalaryRatio"] = (
+    input_df["Balance"] /
+    (input_df["EstimatedSalary"] + 1)
+)
+
+input_df["ProductDensity"] = (
+    input_df["NumOfProducts"] /
+    (input_df["Age"] + 1)
+)
+
+input_df["AgeTenureInteraction"] = (
+    input_df["Age"] *
+    input_df["Tenure"]
+)
+
 # ================================
 # TABS
 # ================================
