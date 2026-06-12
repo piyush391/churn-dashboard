@@ -116,7 +116,6 @@ for name, clf in models.items():
     print(f"Training: {name}")
 
     pipeline = Pipeline(steps=[
-    ("feature_engineering", FeatureEngineer()),
     ("preprocessor", preprocessor),
     ("model", clf)
 ])
