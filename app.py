@@ -209,9 +209,12 @@ with tab2:
         ml_model = model.named_steps["model"]
 
         explainer = shap.TreeExplainer(ml_model)
-        shap_values = explainer(X_transformed)
+        shap_values = explainer.shap_values(X_transformed)
 
-        values = shap_values.values[0].reshape(-1)
+        if isinstance(shap_values, list):
+        values = np.array(shap_values[1][0]).flatten()
+        else:
+        values = np.array(shap_values[0]).flatten()
         feature_names = get_feature_names(model)
 
         min_len = min(len(values), len(feature_names))
