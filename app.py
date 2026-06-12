@@ -10,6 +10,21 @@ import plotly.graph_objects as go
 import shap
 from sklearn.metrics import roc_curve, auc
 
+
+from sklearn.base import BaseEstimator, TransformerMixin
+
+class FeatureEngineer(BaseEstimator, TransformerMixin):
+    def fit(self, X, y=None):
+        return self
+
+    def transform(self, X):
+        X = X.copy()
+
+        X["BalanceSalaryRatio"] = X["Balance"] / (X["EstimatedSalary"] + 1)
+        X["ProductDensity"] = X["NumOfProducts"] / (X["Age"] + 1)
+        X["AgeTenureInteraction"] = X["Age"] * X["Tenure"]
+
+        return X
 # ================================
 # ⚡ CACHE (STABLE LOADING)
 # ================================
