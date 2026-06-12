@@ -25,6 +25,12 @@ class FeatureEngineer(BaseEstimator, TransformerMixin):
         X["AgeTenureInteraction"] = X["Age"] * X["Tenure"]
 
         return X
+
+# ================================
+# CONFIG (FIRST STREAMLIT CALL)
+# ================================
+st.set_page_config(layout="wide")
+
 # ================================
 # ⚡ CACHE (STABLE LOADING)
 # ================================
@@ -40,10 +46,7 @@ def load_models():
 df = load_data()
 models = load_models()
 
-# ================================
-# CONFIG (FIRST STREAMLIT CALL)
-# ================================
-st.set_page_config(layout="wide")
+
 
 # ================================
 # 🏦 HEADER
