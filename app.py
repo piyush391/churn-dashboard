@@ -212,14 +212,14 @@ with tab2:
         shap_values = explainer.shap_values(X_transformed)
 
         if isinstance(shap_values, list):
-        values = np.array(shap_values[1][0]).flatten()
+            values = np.array(shap_values[1][0]).flatten()
         else:
-        values = np.array(shap_values[0]).flatten()
-        feature_names = get_feature_names(model)
+         values = np.array(shap_values[0]).flatten()
+         feature_names = get_feature_names(model)
 
-        min_len = min(len(values), len(feature_names))
-        values = values[:min_len]
-        feature_names = feature_names[:min_len]
+         min_len = min(len(values), len(feature_names))
+         values = values[:min_len]
+         feature_names = feature_names[:min_len]
 
         df_shap = pd.DataFrame({
             "Feature": feature_names,
@@ -326,6 +326,20 @@ with tab2:
 
             target = "Exited"
             X_full = df.drop(columns=[target, "Year"], errors="ignore")
+            X["BalanceSalaryRatio"] = (
+                    X["Balance"] /
+                    (X["EstimatedSalary"] + 1)
+                    )
+
+            X["ProductDensity"] = (
+                    X["NumOfProducts"] /
+                    (X["Age"] + 1)
+                    )
+
+            X["AgeTenureInteraction"] = (
+                     X["Age"] *
+                     X["Tenure"]
+                    )
 
             for col in ["Geography", "Gender", "HasCrCard", "IsActiveMember"]:
                 X_full[col] = X_full[col].astype(str)
@@ -385,6 +399,20 @@ with tab3:
 
     target = "Exited"
     X = df.drop(columns=[target, "Year"], errors="ignore")
+    X["BalanceSalaryRatio"] = (
+         X["Balance"] /
+        (X["EstimatedSalary"] + 1)
+)
+
+    X["ProductDensity"] = (
+        X["NumOfProducts"] /
+        (X["Age"] + 1)
+)
+
+    X["AgeTenureInteraction"] = (
+        X["Age"] *
+        X["Tenure"]
+)
     y = df[target]
 
     for col in ["Geography", "Gender", "HasCrCard", "IsActiveMember"]:
