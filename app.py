@@ -18,20 +18,19 @@ st.set_page_config(layout="wide")
 # ================================
 # ⚡ CACHE (STABLE LOADING)
 # ================================
-@st.cache_data
-def load_data():
-    return pd.read_csv("European_Bank.csv")
-
 @st.cache_resource
 def load_models():
+
+    if not os.path.exists("models.pkl"):
+
+        import subprocess
+        subprocess.run(
+            ["python", "train_model.py"],
+            check=True
+        )
+
     with open("models.pkl", "rb") as f:
         return pickle.load(f)
-
-df = load_data()
-models = load_models()
-
-
-
 # ================================
 # 🏦 HEADER
 # ================================
