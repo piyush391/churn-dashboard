@@ -241,10 +241,15 @@ with tab2:
         values = values[:min_len]
         feature_names = feature_names[:min_len]
 
-        df_shap = pd.DataFrame({
-            "Feature": feature_names,
-            "SHAP Impact": values
-            })
+        df_imp = pd.DataFrame({
+        "Feature": feature_names[:min_len],
+        "Impact": importances[:min_len]
+        })
+
+        df_imp = df_imp.sort_values(
+        "Impact",
+        ascending=False
+        )
 
         df_shap["AbsImpact"] = np.abs(df_shap["SHAP Impact"])
 
