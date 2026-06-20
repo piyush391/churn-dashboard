@@ -93,7 +93,7 @@ models = {
     ),
 
     "Random Forest": RandomForestClassifier(
-        n_estimators=300,
+        n_estimators=100,
         random_state=42,
         n_jobs=-1,
         class_weight="balanced"
@@ -112,7 +112,7 @@ try:
     from xgboost import XGBClassifier
 
     models["XGBoost"] = XGBClassifier(
-        n_estimators=300,
+        n_estimators=100,
         learning_rate=0.05,
         max_depth=5,
         subsample=0.8,
