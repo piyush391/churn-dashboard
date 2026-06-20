@@ -11,12 +11,19 @@ import shap
 from sklearn.metrics import roc_curve, auc
 
 # ================================
-# CONFIG (FIRST STREAMLIT CALL)
+# CONFIG
 # ================================
 st.set_page_config(layout="wide")
 
 # ================================
-# ⚡ CACHE (STABLE LOADING)
+# DATA LOADING
+# ================================
+@st.cache_data
+def load_data():
+    return pd.read_csv("European_Bank.csv")
+
+# ================================
+# MODEL LOADING
 # ================================
 @st.cache_resource
 def load_models():
@@ -31,6 +38,19 @@ def load_models():
 
     with open("models.pkl", "rb") as f:
         return pickle.load(f)
+
+# ================================
+# LOAD FILES
+# ================================
+df = load_data()
+
+try:
+    models = load_models()
+
+except Exception as e:
+    st.error(f"Model loading failed: {e}")
+    st.stop()
+    
 # ================================
 # 🏦 HEADER
 # ================================
@@ -61,7 +81,6 @@ model_name = st.sidebar.selectbox(
     "Select Model",
     list(models.keys())
 )
-
 model = models[model_name]
 
 # ================================
@@ -211,14 +230,16 @@ with tab2:
         shap_values = explainer.shap_values(X_transformed)
 
         if isinstance(shap_values, list):
-            values = np.array(shap_values[1][0]).flatten()
+             values = np.array(shap_values[1][0]).flatten()
         else:
-         values = np.array(shap_values[0]).flatten()
-         feature_names = get_feature_names(model)
+             values = np.array(shap_values[0]).flatten()
 
-         min_len = min(len(values), len(feature_names))
-         values = values[:min_len]
-         feature_names = feature_names[:min_len]
+        feature_names = get_feature_names(model)
+
+        min_len = min(len(values), len(feature_names))
+
+        values = values[:min_len]
+        feature_names = feature_names[:min_len]
 
         df_shap = pd.DataFrame({
             "Feature": feature_names,
@@ -318,35 +339,50 @@ with tab2:
         # ================================
         # PDP
         # ================================
-        st.subheader(" PDP (Interactive)")
+        st.subheader("📈 PDP (Interactive)")
 
         try:
-            df = load_data()
+
+            df_pdp = load_data()
 
             target = "Exited"
-            X_full = df.drop(columns=[target, "Year"], errors="ignore")
-            X["BalanceSalaryRatio"] = (
-                    X["Balance"] /
-                    (X["EstimatedSalary"] + 1)
-                    )
 
-            X["ProductDensity"] = (
-                    X["NumOfProducts"] /
-                    (X["Age"] + 1)
-                    )
+            X_full = df_pdp.drop(
+                columns=[target, "Year"],
+                errors="ignore"
+            )
 
-            X["AgeTenureInteraction"] = (
-                     X["Age"] *
-                     X["Tenure"]
-                    )
+            X_full["BalanceSalaryRatio"] = (
+                X_full["Balance"] /
+                (X_full["EstimatedSalary"] + 1)
+            )
 
-            for col in ["Geography", "Gender", "HasCrCard", "IsActiveMember"]:
+            X_full["ProductDensity"] = (
+                X_full["NumOfProducts"] /
+                (X_full["Age"] + 1)
+            )
+
+            X_full["AgeTenureInteraction"] = (
+                X_full["Age"] *
+                X_full["Tenure"]
+            )
+
+            for col in [
+                "Geography",
+                "Gender",
+                "HasCrCard",
+                "IsActiveMember"
+            ]:
                 X_full[col] = X_full[col].astype(str)
 
             feature = st.selectbox(
-                "Select Feature for PDP",
-                ["Age", "Balance", "EstimatedSalary"],
-                key=f"pdp_feature_{model_name}"
+                "Select Feature",
+                [
+                    "Age",
+                    "Balance",
+                    "EstimatedSalary"
+                ],
+                key=f"pdp_{model_name}"
             )
 
             values_grid = np.linspace(
@@ -358,32 +394,38 @@ with tab2:
             pdp_values = []
 
             for val in values_grid:
+
                 X_temp = X_full.copy()
+
                 X_temp[feature] = val
 
-                preds = model.predict_proba(X_temp)[:, 1]
-                pdp_values.append(np.mean(preds))
+                preds = model.predict_proba(
+                    X_temp
+                )[:, 1]
+
+                pdp_values.append(
+                    np.mean(preds)
+                )
 
             fig_pdp = go.Figure()
 
-            fig_pdp.add_trace(go.Scatter(
-                x=values_grid,
-                y=pdp_values,
-                mode="lines+markers"
-            ))
+            fig_pdp.add_trace(
+                go.Scatter(
+                    x=values_grid,
+                    y=pdp_values,
+                    mode="lines+markers"
+                )
+            )
 
             fig_pdp.update_layout(
                 title=f"PDP - {feature}",
-                height=350
+                height=400
             )
 
             st.plotly_chart(
                 fig_pdp,
-                use_container_width=True,
-                key=f"pdp_plot_{feature}_{model_name}"
+                use_container_width=True
             )
-
-            st.caption("Shows how a feature affects churn probability across all customers.")
 
         except Exception as e:
             st.warning(f"PDP not available: {e}")
@@ -399,19 +441,19 @@ with tab3:
     target = "Exited"
     X = df.drop(columns=[target, "Year"], errors="ignore")
     X["BalanceSalaryRatio"] = (
-         X["Balance"] /
+        X["Balance"] /
         (X["EstimatedSalary"] + 1)
-)
+    )
 
     X["ProductDensity"] = (
         X["NumOfProducts"] /
         (X["Age"] + 1)
-)
+    )
 
     X["AgeTenureInteraction"] = (
         X["Age"] *
         X["Tenure"]
-)
+    )
     y = df[target]
 
     for col in ["Geography", "Gender", "HasCrCard", "IsActiveMember"]:
