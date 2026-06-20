@@ -288,7 +288,19 @@ with tab2:
         df_imp = pd.DataFrame({
             "Feature": feature_names[:min_len],
             "Impact": importances[:min_len]
-        }).sort_values("Impact")
+        })
+
+        df_imp["AbsImpact"] = np.abs(df_imp["Impact"])
+
+        df_imp = df_imp.sort_values(
+            by="AbsImpact",
+            ascending=False
+        )
+
+        st.dataframe(
+            df_imp[["Feature", "Impact"]],
+            use_container_width=True
+        ).sort_values("Impact")
 
         st.dataframe(df_imp)
 
