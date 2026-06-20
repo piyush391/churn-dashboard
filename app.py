@@ -244,9 +244,19 @@ with tab2:
         df_shap = pd.DataFrame({
             "Feature": feature_names,
             "SHAP Impact": values
-        })
+            })
 
-        st.dataframe(df_shap)
+        df_shap["AbsImpact"] = np.abs(df_shap["SHAP Impact"])
+
+        df_shap = df_shap.sort_values(
+            "AbsImpact",
+            ascending=False
+            )
+
+        st.dataframe(
+            df_shap[["Feature", "SHAP Impact"]],
+            use_container_width=True
+            )
 
         fig = go.Figure()
         colors = np.where(values < 0, "red", "green")
@@ -307,7 +317,6 @@ with tab2:
             use_container_width=True,
             key=f"importance_chart_{model_name}"
         )
-
         # ================================
         # TOP DRIVERS INSIGHT
         # ================================
