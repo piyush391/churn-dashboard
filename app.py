@@ -259,11 +259,15 @@ with tab2:
             )
 
         fig = go.Figure()
-        colors = np.where(values < 0, "red", "green")
+        colors = np.where(
+            df_shap["SHAP Impact"] < 0,
+            "red",
+            "green"
+        )
 
         fig.add_trace(go.Bar(
-            x=values,
-            y=feature_names,
+            x=df_shap["SHAP Impact"],
+            y=df_shap["Feature"],
             orientation="h",
             marker_color=colors
         ))
